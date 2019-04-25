@@ -1,8 +1,11 @@
 <template>
   <div class="container">
-      <h1>my-header</h1>
-      <div class="g-header_wrap"></div>
-      <p>推荐音乐</p>
+        <el-menu mode="horizontal" :default-active="menuActive" class="el-menu-demo g-menu">
+          <el-menu-item index="1">我的</el-menu-item>
+          <el-menu-item index="2">推荐</el-menu-item>
+          <el-menu-item index="3">搜索</el-menu-item>
+      </el-menu>
+
   </div>
 </template>
 
@@ -11,7 +14,9 @@ export default {
   name: 'HelloWorld',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: 'Welcome to Your Vue.js App',
+      menuActive:"1"
+
     }
   }
 }
@@ -19,13 +24,14 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-    .g-header_wrap{
+    .g-menu{
         height:0.4rem;
-        width:1rem;
-        border:1px solid red;
-        
-    }
-    p{
-        font-size:0.15rem;
+        display:flex;
+        justify-content:space-between;        
+
+        & li {
+            height:0.4rem!important;
+            line-height:0.4rem!important;
+        }
     }
 </style>
