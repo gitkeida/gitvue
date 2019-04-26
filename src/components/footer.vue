@@ -14,7 +14,6 @@
             <div class="g-footer_right">
                 <div class="g-play">
                     <i class="el-icon-caret-right"></i>
-                    <el-progress class="g-progress" width="100" type="circle" :percentage="56" show-text="false" status="success" ></el-progress>
                 </div>
             </div>
 
@@ -26,7 +25,7 @@
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'myfooter',
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
@@ -97,11 +96,10 @@ export default {
                 }
 
                 & >.g-progress{
-                    width:0.28rem;
-                    height:0.28rem;
                     position:absolute;
                     top:0;
                     left:0;
+
                 }
 
 

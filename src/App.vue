@@ -1,20 +1,19 @@
 <template>
   <div id="app">
-    <Header></Header>
+    <myHeader></myHeader>
     <router-view/>
-    <Footer></Footer>
+    <myFooter></myFooter>
   </div>
 </template>
 
 <script>
-import Header from '@/components/header'
-import Footer from '@/components/footer'
+import myHeader from '@/components/header'
+import myFooter from '@/components/footer'
 export default {
   name: 'App',
-  components:{Header,Footer}
+  components:{myHeader,myFooter}
 }
 </script>
 
-<style>
-
+<style scoped>
 </style>

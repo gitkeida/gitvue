@@ -1,29 +1,46 @@
 <template>
-  <div class="container">
-      <hr>
-      <h3 class="g-card_title">推荐歌单</h3>
-      <div class="g-card_wrap">
-          <ul class="g-card_list">
-              <li class="g-card_item" v-for="i in 6">
-                  <div class="g-image"><img :src="imgUrl" alt=""></div>
-                  <p class="g-title">一年四季春夏秋冬</p>
-              </li>
-          </ul>
-      </div>
-  </div>
+    <div>
+        <Banner :items="bannerList.length" :loop="true">
+             <li class="g-banner_item" v-for="(item,i) in bannerList" :key="i">
+                 <img :src="'./static/img/'+item.imgUrl" alt="">
+             </li>
+        </Banner>
+        <div class="container">
+            <hr>
+            <h3 class="g-card_title">推荐歌单</h3>
+            <div class="g-card_wrap">
+                <ul class="g-card_list">
+                    <li class="g-card_item" v-for="i in 6" :key="i">
+                        <div class="g-image"><img :src="imgUrl" alt=""></div>
+                        <p class="g-title">一年四季春夏秋冬</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
 </template>
 
 <script>
+import Banner from '@/components/banner'
 export default {
-  name: 'HelloWorld',
+  name: 'home',
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
       imgUrl:require("../../assets/img/39582418617683.jpg"),
+      BannerimgUrl:require("../../assets/img/1.gif"),
+      bannerList:[
+          {imgUrl:'1.gif'},
+          {imgUrl:'banner_02.jpg'},
+          {imgUrl:'banner_03.jpg'},
+      ],
+
       currentDate: new Date()
       
     }
-  }
+  },
+  components:{Banner}
 }
 </script>
 
@@ -32,10 +49,13 @@ export default {
     .container{
         padding:0 0.15rem;   
     }
+    .g-banner_wrap{
+        margin:60px;
+    }
     .g-card_title{
         margin-bottom:0.1rem;
     }
-    .g-card_list{
+    .g-card_list{ 
         display:flex;
         justify-content:space-between;
         flex-wrap:wrap;
