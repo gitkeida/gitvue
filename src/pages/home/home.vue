@@ -1,7 +1,7 @@
 <template>
     <div>
-        <Banner :items="bannerList.length" :loop="true">
-             <li class="g-banner_item" v-for="(item,i) in bannerList" :key="i">
+        <Banner :items="bannerList.length" :loop="true" :autoPlay="3000" :pagination="true">
+             <li v-for="(item,i) in bannerList" :key="i">
                  <img :src="'./static/img/'+item.imgUrl" alt="">
              </li>
         </Banner>
@@ -17,7 +17,8 @@
                 </ul>
             </div>
         </div>
-
+        
+        <router-link to="/hello">go to hello w</router-link>
     </div>
 </template>
 

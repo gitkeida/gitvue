@@ -1,15 +1,18 @@
 <template>
   <div class="">
      <div class="g-banner_wrap"
-        @touchstart="start"
-        @touchmove="move"
-        @touchend="end"
+        @touchstart.stop="items > 1 && start($event)"
+        @touchmove.stop="items > 1 && move($event)"
+        @touchend.stop="items >1 && end($event)"
      >
          <ul class="g-banner_list" 
             :style="{left:leftMsg + 'px',transition:duration}"
             ref = "bannerList"
             >
                 <slot></slot>
+         </ul>
+         <ul v-if="items >1 && pagination" class="g-banner_pagination" >
+             <li v-for="(i,idx) in items" :key="i" :class="{active: loop ? (active_lis == i) : (active_lis == idx)}" @click.stop="paginationClick(loop ? i : idx)"></li>
          </ul>
      </div>
   </div>
@@ -20,20 +23,30 @@ export default {
   name: 'banner',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App',
-      imgUrl:require("../assets/img/1.gif"),
-      o_start:null,         // 起点
-      o_space:null,         // 移动距离
-      leftMsg:0,            // left值
-      o_startLeft:null,     // 起点left值
-      d_time:"all .5s",     // 过度时间
-      duration:"all .5s",   // 过度值
-      active_lis:0,         
+      msg: 'this is banner component',
+      o_start:null,         // start
+      o_space:null,         // space
+      leftMsg:0,            // left
+      o_startLeft:null,     // start left
+      wrapWid:null,         // wrap width
+      d_time:"all .5s",     // duration time
+      duration:"all .5s",   // duration value
+      active_lis:0,         // active item
+      timer:null,           // timer
+
     }
   },
-  props:['items','loop'],
+  props: {
+      items:{
+          default:1
+      },
+      loop:Boolean,
+      autoPlay:Number,
+      pagination:Boolean,
+  },
   methods:{
       start:function(e){
+          this.autoPlay && this.stopBanner();
           this.o_space = 0;
           this.o_start = e.targetTouches[0].pageX;
           this.o_startLeft = this.leftMsg;
@@ -46,11 +59,11 @@ export default {
       },
       end:function(e){
           this.duration = this.d_time;
-          let wrapWid = this.$refs.bannerList.firstChild.clientWidth || this.$refs.bannerList.clientWidth;
           let isF = this.o_space < 0;
           let nowLeft = null;
+          this.autoPlay && this.startBanner();
           
-          if(Math.abs(this.o_space) > wrapWid / 3)
+          if(Math.abs(this.o_space) > this.wrapWid / 3)
           {
 
               isF ? this.active_lis+=1 : this.active_lis-=1;
@@ -58,14 +71,14 @@ export default {
               { 
                   // if is first image, switch last image
                   this.duration = '';
-                  nowLeft = (this.items + 1) * wrapWid * -1;
+                  nowLeft = (this.items + 1) * this.wrapWid * -1;
                   nowLeft = nowLeft + this.o_space;
                   this.setBannerLeft(nowLeft);
                   let _this = this;
                   setTimeout(function(){
                       _this.duration = _this.d_time;
                       _this.active_lis = _this.items;
-                      _this.setBannerLeft(_this.active_lis * wrapWid * -1);
+                      _this.setBannerLeft(_this.active_lis * _this.wrapWid * -1);
                   },50)
                   return;
               }
@@ -79,7 +92,7 @@ export default {
                   setTimeout(function(){
                       _this.duration = _this.d_time;
                       _this.active_lis = 1;
-                      _this.setBannerLeft(_this.active_lis * wrapWid * -1);
+                      _this.setBannerLeft(_this.active_lis * _this.wrapWid * -1);
                   },50)
                   return;
               }
@@ -87,7 +100,7 @@ export default {
               !this.loop && this.active_lis < 0 && (this.active_lis = 0);
               !this.loop && this.active_lis > (this.items-1) && (this.active_lis = this.items-1);
               
-              nowLeft = wrapWid * this.active_lis * -1;
+              nowLeft = this.wrapWid * this.active_lis * -1;
               this.setBannerLeft(nowLeft);
           }
           else
@@ -96,21 +109,74 @@ export default {
           }
 
       },
-
       setBannerLeft:function(left){
           this.leftMsg = left;
       },
       infinite:function(){
-          // 克隆第一张和最后一张，
+          // clone the first and last image
           let bannerList = this.$refs.bannerList,
               first = bannerList.firstChild.cloneNode(true),
               last = bannerList.lastChild.cloneNode(true);
           bannerList.insertBefore(last,bannerList.firstChild);
           bannerList.appendChild(first);
+          this.active_lis = 1;
+          this.duration = '';
+          this.setBannerLeft(this.wrapWid * -1);
+          let _this = this;
+          setTimeout(function(){
+              _this.duration = _this.d_time;
+          },50)
+      },
+      banner:function(){
+          this.active_lis++;
+          !this.loop && this.active_lis >= this.items && (this.active_lis = 0);     // ！loop
+
+          if(this.loop && this.active_lis >= this.items + 1)                        // loop 
+          {
+                  this.duration = '';
+                  this.setBannerLeft(0);
+                  let _this = this;
+                  setTimeout(function(){
+                      _this.duration = _this.d_time;
+                      _this.active_lis = 1;
+                      _this.setBannerLeft(_this.wrapWid * _this.active_lis * -1);
+                  },50)
+                  return;
+          }
+          
+          this.setBannerLeft(this.active_lis * this.wrapWid * -1);
+      },
+      startBanner(){
+          let _this = this;
+          this.timer = setInterval(function(){
+              _this.banner();
+          },this.autoPlay)
+      },
+      stopBanner(){
+          if(this.timer !== null)
+          {
+              clearInterval(this.timer);
+              this.timer = null;
+          }
+      },
+      paginationClick:function(idx){
+          this.active_lis = idx;
+          this.setBannerLeft(this.wrapWid * this.active_lis * -1);
+      },
+      resize(){
+          this.wrapWid =  this.$refs.bannerList.clientWidth || _this.$refs.bannerList.firstChild.clientWidth;
       }
   },
   mounted:function(){
+
+      window.addEventListener("resize",this.resize)
+      this.resize();
       this.loop && this.infinite();
+      this.items > 1 && this.autoPlay && this.startBanner();
+  },
+  beforeDestroy:function(){
+      this.stopBanner();
+      window.removeEventListener("resize",this.resize);
   }
 }
 </script>
@@ -130,7 +196,7 @@ export default {
             left:0px;
             
 
-            & >.g-banner_item{
+            & >li{
                 min-width:100%;
                 height:100%;
 
@@ -139,6 +205,30 @@ export default {
                     height:100%;
                 }
             }
+        }
+
+        & >.g-banner_pagination{
+            width:100%;
+            height:0.2rem;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            position:absolute;
+            bottom:0.01rem;
+
+            & >li{
+                width:0.08rem;
+                height:0.08rem;
+                background:#fff;
+                border-radius:50%;
+                margin:0 0.05rem;
+
+                &.active{
+                   background:pink ;
+                }
+            }
+
+
         }
     }
 
