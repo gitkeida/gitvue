@@ -1,9 +1,9 @@
 <template>
   <div class="container">
-        <el-menu mode="horizontal" :default-active="menuActive" class="el-menu-demo g-menu">
-          <el-menu-item index="1">我的</el-menu-item>
+        <el-menu mode="horizontal" :default-active="menuActive" :router="true" class="el-menu-demo g-menu">
+          <el-menu-item index="/">我的</el-menu-item>
           <el-menu-item index="2">推荐</el-menu-item>
-          <el-menu-item index="3">搜索</el-menu-item>
+          <el-menu-item index="/search">搜索</el-menu-item>
       </el-menu>
 
   </div>
@@ -15,7 +15,7 @@ export default {
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
-      menuActive:"1"
+      menuActive:"/"
 
     }
   }
