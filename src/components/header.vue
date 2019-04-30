@@ -18,6 +18,9 @@ export default {
       menuActive:"/"
 
     }
+  },
+  mounted:function(){
+      this.menuActive = this.$route.fullPath;
   }
 }
 </script>

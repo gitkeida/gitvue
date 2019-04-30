@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import Home from '@/pages/home/home'
 import Search from '@/pages/search/search'
+import Details from '@/pages/details/details'
 
 Vue.use(Router)
 
@@ -14,12 +15,12 @@ export default new Router({
       component: Home
     },
     {
-      path: '/hello',
-      component: HelloWorld
-    },
-    {
       path:'/search',
       component: Search
+    },
+    {
+      path:'/details',
+      component: Details
     }
   ]
 })
