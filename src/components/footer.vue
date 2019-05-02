@@ -3,11 +3,11 @@
       <div class="g-footer_wrap">
             <div class="g-footer_left">
                 <div class="g-image" :style="{transform:'rotate('+deg+'deg)'}">
-                    <img :src="playData && playData.pic || imgUrl" alt="">
+                    <img :src="playData && playData.pic" alt="">
                 </div>
                 <div class="g-title">
-                    <h5>{{playData && playData.name || '沉默是金'}}</h5>
-                    <p>{{playData && playData.singer || "张国荣"}}</p>
+                    <h5>{{playData && playData.name}}</h5>
+                    <p>{{playData && playData.singer}}</p>
                 </div>
             </div>
 
@@ -18,7 +18,7 @@
             </div>
 
             <div class="g-audio_wrap">
-                <audio :src="playData && playData.url || mp3Url" autoplay="autoplay" controls ref="myAudio" 
+                <audio :src="playData && playData.url" :autoplay="isPlaying && 'autoplay'" controls ref="myAudio" 
                     @play="onplay"
                     @pause="onpause"
                     @ended="onended"
@@ -32,7 +32,7 @@
                 ></audio>
             </div>
             
-            <div class="g-audio_progress" :style="{width:playWidth + '%'}"></div>
+            <div class="g-audio_progress" :style="{width:footerTiming + '%'}"></div>
 
           
       </div>
@@ -40,52 +40,34 @@
 </template>
 
 <script>
-import Bus from '@/store/bus'
+import {mapState,mapMutations} from 'vuex'
 
 export default {
   name: 'myfooter',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App',
-      imgUrl:require("../assets/img/39582418617683.jpg"),
-      mp3Url:'../../static/mp3/chenmoshijing.mp3',
-      playData:null,
-      isPlaying:false,
-      playWidth:0,
       timer:null,
       deg:0,
       degTimer:null,
     }
   },
+  computed:{
+      ...mapState(['playData','isPlaying','footerTiming'])
+  },
   methods:{
-      getData:function(){
-          let _this = this;
-          Bus.$on("getAudioData",function(data){
-              console.log("接受数据")
-              if(_this.playData == data)
-              {
-                  _this.play();
-                  return;
-              }
-              _this.init();
-              _this.playData = data;
-              _this.isPlaying = true;
-          })
-
-      },
+      ...mapMutations(['IS_PLAYING','FOOTER_TIMING']),
       init(){
-          this.playWidth = 0;
           this.deg = 0;
       },
       play(){
           // 播放/暂停
           let audio = this.$refs.myAudio;
-          audio.ended && (this.playWidth = this.deg = 0);
+          audio.ended && this.FOOTER_TIMING(this.deg = 0);
           this.isPlaying ? audio.pause() : audio.play();
       },
       onplay:function(){
           console.log("开始播放")
-          this.isPlaying = true;
+          this.IS_PLAYING(true);
           // 开始播放
           this.drageMove();
           this.degRotate();
@@ -93,35 +75,28 @@ export default {
       onpause:function(){
           // 暂停播放
           console.log("暂停")
-          this.isPlaying = false;
+          this.IS_PLAYING(false);
           this.pauseTimer();
       },
       onended:function(){
           console.log("播放结束");
-          this.playWidth = 100;
-          this.isPlaying = false;
+          this.FOOTER_TIMING(100);
+          this.IS_PLAYING(false);
       },
       onloadstart:function(){console.log("当浏览器开始寻找指定的音频/视频时，会发生 loadstart 事件。即当加载过程开始时。")},
       ondurationchange:function(){console.log("当指定音频/视频的时长数据发生变化时，发生 durationchange 事件。")},
       onloadedmetadata:function(){console.log("当指定的音频/视频的元数据已加载时，会发生 loadedmetadata 事件。")},
-      onloadeddata:function(){
-          console.log("当前帧的数据已加载，但没有足够的数据来播放指定音频/视频的下一帧时,发生 onloadeddata 事件");
-
-      },
+      onloadeddata:function(){console.log("当前帧的数据已加载，但没有足够的数据来播放指定音频/视频的下一帧时,发生 onloadeddata 事件");},
       onprogress:function(){console.log("当浏览器正在下载指定的音频/视频时，会发生 progress 事件。")},
-      oncanplay:function(){
-          console.log("当浏览器能够开始播放指定的音频/视频时，发生 canplay 事件。")
-      },
-      oncanplaythrough:function(){
-          console.log("当浏览器预计能够在不停下来进行缓冲的情况下持续播放指定的音频/视频时，会发生 canplaythrough 事件。")
-      },
+      oncanplay:function(){console.log("当浏览器能够开始播放指定的音频/视频时，发生 canplay 事件。")},
+      oncanplaythrough:function(){console.log("当浏览器预计能够在不停下来进行缓冲的情况下持续播放指定的音频/视频时，会发生 canplaythrough 事件。")},
       drageMove:function(){
           // 进度
           let audio = this.$refs.myAudio,
               _this = this;
           clearInterval(this.timer);
           this.timer = setInterval(function(){
-              _this.playWidth = audio.currentTime  / audio.duration * 100;
+              _this.FOOTER_TIMING(audio.currentTime  / audio.duration * 100);
           },1000);
       },
       pauseTimer(){
@@ -147,7 +122,6 @@ export default {
       }
   },
   mounted:function(){
-      this.getData();
   }
 }
 </script>
@@ -225,10 +199,10 @@ export default {
         }
 
         & >.g-audio_wrap{
-            //display:none;
             position:absolute;
             z-index:-9999;
             opacity:0;
+            bottom: -0.6rem;
             
         }
 

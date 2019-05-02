@@ -1,0 +1,237 @@
+<template>
+    <div>
+        <div class="g-details_wrap">
+            <div class="g-CD_wrap_bg"></div>
+
+            <div class="g-content_wrap">
+
+                <header>
+                    <div class="g-details_header">
+                        <div class="g-details_back">
+                            <i class="el-icon-back"></i>
+                        </div>
+                        <div class="g-details_title">
+                            <h5>{{playData.name}}</h5>
+                            <p>{{playData.singer}}></p>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="g-content">
+                    <div class="g-CD_wrap">
+                        <div class="g-CD_bg">
+                            <div class="g-CD_img">
+                                <img :src="playData.pic" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="g-details_footer">
+
+                    <div class="g-bar_wrap">
+                        <div><span class="g-dot_start">0:00</span></div>
+                        <Bar :timing="30"></Bar>
+                        <div><span class="g-dot_end">3:10</span></div>
+                    </div>
+
+                    <div class="g-menu_wrap">
+                        <div>
+                            <i class="el-icon-d-arrow-left"></i>
+                        </div>
+                        <div>
+                            <i class="el-icon-video-play"></i>
+                        </div>
+                        <div>
+                            <i class="el-icon-d-arrow-right"></i>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>  
+</template>
+
+<script>
+import {mapState,mapMutations} from 'vuex'
+import Bar from '@/components/progressBar'
+
+export default {
+  name: 'musicDetails',
+  data () {
+    return {
+      msg: 'Welcome to Your Vue.js App',
+      imgUrl:'39582418617683.jpg'
+
+      
+    }
+  },
+  computed:{
+      ...mapState(['playData'])
+  },
+  components:{Bar}
+
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style lang="less" scoped>
+    .g-position{
+        position:absolute;
+        top:0;
+        bottom:0;
+        left:0;
+        right:0;
+        margin:0;
+        height:100%;
+        width:100%;
+        overflow:hidden;
+    }
+    .g-details_wrap{
+        .g-position;
+        z-index:99;
+        color:#fff;
+        background-color:#7f7f7f;
+
+
+        &>.g-CD_wrap_bg{
+            .g-position;
+            background:url(../../../static/img/17596584090996716.jpg);
+            background-position: 50%;
+            background-repeat: no-repeat;
+            background-size: auto 100%;
+            transform: scale(1.5);
+            transform-origin: center top;
+            z-index: -1;
+
+            &::after{
+                content:'';
+                .g-position;
+                background:rgba(0,0,0,0.5);
+            }
+        }
+
+        &>.g-content_wrap{
+            .g-position;
+        }
+
+        & .g-details_header{
+            display:flex;
+            height:0.45rem;
+
+            &>.g-details_back{
+                width:0.5rem;
+                text-align:center;
+
+                &>i{
+                    font-size:0.24rem;
+                    line-height:0.45rem;
+
+                }
+            }
+
+            &>.g-details_title{
+                padding-top:5px;
+                & >h5{
+                    font-size:0.15rem;
+                    margin-bottom:0.03rem;
+                    font-weight:normal;
+                }
+                & >p{
+                    font-size:0.12rem;
+                    color:#ccc;
+                }
+            }
+        }
+
+        & .g-content{
+
+            &>.g-CD_wrap{
+                padding-top:0.6rem;
+                width:100%;
+                min-height:3rem;
+                display:flex;
+                justify-content:center;
+
+                &>.g-CD_bg{
+                    display:flex;
+                    justify-content:center;
+                    align-items:center;
+                    width:3rem;
+                    height:3rem;
+                    border-radius:50%;
+                    background:url(../../../static/img/disc-ip6.png) no-repeat;
+                    background-size:3rem 3rem;
+                    position:relative;
+
+                    &:after{
+                        content:'';
+                        background:url(../../../static/img/disc_light-ip6.png) no-repeat;
+                        background-size:3rem 3rem;
+                        width: 3rem;
+                        height: 3rem;
+                        display: inline-block;
+                        position:absolute;
+                        top:0;
+                        left:0;
+                    }
+
+                    &>.g-CD_img{
+                        display:inline-block;
+                        width:1.85rem;
+                        height:1.85rem;
+                        border-radius:50%;
+                        overflow:hidden;
+
+                        &>img{
+                            width:100%;
+                            height:100%;
+                        }
+
+                    }
+                }
+            }
+        }
+
+        & .g-details_footer{
+            position:absolute;
+            bottom:0;
+            width:100%;
+
+            &>.g-bar_wrap{
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                padding:0 0.2rem;
+
+                & span{
+                    display:inline-block;
+                    font-size:0.12rem;
+                    height:100%;
+                    line-height:2;
+
+                    &.g-dot_end{
+                        color:rgba(255,255,255,0.6);
+                    }
+                }
+            }
+
+            &>.g-menu_wrap{
+                display:flex;
+                justify-content:space-around;
+                align-items:center;
+                padding:0.2rem 15%;
+
+                & i{
+                    font-size:0.25rem;
+                }
+
+                & >div:nth-of-type(2)>i{
+                    font-size:0.4rem;
+                }
+            }
+        }
+    }
+</style>

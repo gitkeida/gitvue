@@ -10,7 +10,7 @@ import '@/assets/css/base.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/assets/js/fontSize.js'
 import baseUrl from './service/api.config'
-
+import store from './store/index'
 
 Vue.use(ElementUI);
 Vue.use(VueAxios,axios);
@@ -23,6 +23,7 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
+  store,
   axios,
   components: { App },
   template: '<App/>'

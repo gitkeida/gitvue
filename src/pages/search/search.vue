@@ -40,7 +40,7 @@
 
 <script>
 import {axios_getSearch,axios_goSearch} from '@/service/service.js'
-import Bus from '@/store/bus'
+import {mapState,mapMutations} from 'vuex'
 
 export default {
   name: 'search',
@@ -55,7 +55,11 @@ export default {
       
     }
   },
+  computed:{
+      ...mapState(['playData'])
+  },
   methods:{
+      ...mapMutations(['PLAY_DATA']),
       async goSearch(val){
             console.log("搜索点击")
             console.log(val)
@@ -91,8 +95,10 @@ export default {
           this.goSearch(msg);
       },
       goPlay(idx){
-          console.log("发送数据")
-          Bus.$emit("getAudioData",this.searchListValue[idx]);
+          console.log("发送数据");
+          this.playData != this.searchListValue[idx] && this.PLAY_DATA(this.searchListValue[idx])
+          this.$router.push("/musicDetails");
+
       }
   }
 }
