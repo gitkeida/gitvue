@@ -2,7 +2,7 @@ import {
     AUDIO_DATA,
     PLAY_DATA,
     IS_PLAYING,
-    FOOTER_TIMING
+    TIMING
 } from './mutations-type'
 
 export default {
@@ -19,9 +19,13 @@ export default {
     [IS_PLAYING](state,boolean){
         state.isPlaying = boolean;
     },
-    // FOOTER 播放进度
-    [FOOTER_TIMING](state,msg){
-        state.footerTiming = msg;
+    // 播放进度
+    [TIMING](state,msg){
+        state.timing = msg;
+    },
+    // 歌曲时长
+    DURATION(state,msg){
+        state.duration = msg;
     }
 
 }

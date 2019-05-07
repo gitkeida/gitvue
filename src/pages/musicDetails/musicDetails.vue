@@ -8,7 +8,7 @@
                 <header>
                     <div class="g-details_header">
                         <div class="g-details_back">
-                            <i class="el-icon-back"></i>
+                            <i class="el-icon-back" @click="$router.back()"></i>
                         </div>
                         <div class="g-details_title">
                             <h5>{{playData.name}}</h5>
@@ -20,7 +20,7 @@
                 <div class="g-content">
                     <div class="g-CD_wrap">
                         <div class="g-CD_bg">
-                            <div class="g-CD_img">
+                            <div class="g-CD_img" :style="{transform:'rotate('+ deg +'deg)'}">
                                 <img :src="playData.pic" alt="">
                             </div>
                         </div>
@@ -31,8 +31,8 @@
 
                     <div class="g-bar_wrap">
                         <div><span class="g-dot_start">0:00</span></div>
-                        <Bar :timing="30"></Bar>
-                        <div><span class="g-dot_end">3:10</span></div>
+                        <Bar :timing="timing"></Bar>
+                        <div><span class="g-dot_end">{{duration | totalTime}}</span></div>
                     </div>
 
                     <div class="g-menu_wrap">
@@ -40,7 +40,7 @@
                             <i class="el-icon-d-arrow-left"></i>
                         </div>
                         <div>
-                            <i class="el-icon-video-play"></i>
+                            <i :class="isPlaying ? 'el-icon-video-pause' : 'el-icon-video-play' " @click="play"></i>
                         </div>
                         <div>
                             <i class="el-icon-d-arrow-right"></i>
@@ -63,15 +63,58 @@ export default {
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
-      imgUrl:'39582418617683.jpg'
-
+      deg:0,
+      degTimer:null,
+      
       
     }
   },
-  computed:{
-      ...mapState(['playData'])
+  filters:{
+      totalTime:function(msg){
+          msg = parseInt(msg);
+          var m,s;
+          m = Math.floor(msg/60);
+          s = Math.floor(msg%60);
+          m < 10 && (m = '0' + m);
+          s < 10 && (s = '0' + s);
+          return m + ':' + s;
+      }
   },
-  components:{Bar}
+  computed:{
+      ...mapState(['playData','isPlaying','timing','duration'])
+  },
+  components:{Bar},
+  methods:{
+      ...mapMutations(['IS_PLAYING','TIMING']),
+      play(){
+          this.timing == 100 && this.TIMING(0);
+          this.IS_PLAYING(!this.isPlaying);
+      },
+      degRotate(){
+          // 唱碟旋转
+          let _this = this;
+          clearInterval(this.degTimer);
+          this.degTimer = setInterval(function(){
+               _this.deg += 0.3;
+          },30)
+      },
+      pauseTimer(){
+          if(this.degTimer != null)
+          {
+              clearInterval(this.degTimer);
+              this.degTimer = null;
+          }
+      },
+
+  },
+  mounted:function(){
+
+  },
+  watch:{
+      isPlaying:function(msg){
+          msg ? this.degRotate() : this.pauseTimer();
+      }
+  }
 
 }
 </script>
@@ -94,7 +137,7 @@ export default {
         z-index:99;
         color:#fff;
         background-color:#7f7f7f;
-
+        animation:Opacity .5s alternate;
 
         &>.g-CD_wrap_bg{
             .g-position;
