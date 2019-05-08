@@ -6,7 +6,10 @@ Vue.use(Vuex);
 
 const state = {
     audioData:{},       
-    playData:{      
+    playData:{
+        id: '',
+        lrc: '',
+        time: '251',
         pic: './static/img/39582418617683.jpg',
         name: '沉默是金',
         singer: '张国荣',
@@ -15,6 +18,7 @@ const state = {
     isPlaying:false,        // 播放状态
     duration:0,             // 歌曲时长
     timing:0,               // 播放进度 0%  
+    setCurrentTime:null,    // 设置当前播放时间
 }
 
 

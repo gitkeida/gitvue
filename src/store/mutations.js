@@ -26,6 +26,10 @@ export default {
     // 歌曲时长
     DURATION(state,msg){
         state.duration = msg;
+    },
+    // 设置当前播放时间
+    SET_CURRENT_TIME(state,msg){
+        state.setCurrentTime = msg;
     }
 
 }

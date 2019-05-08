@@ -1,5 +1,6 @@
 <template>
     <div>
+        <transition name="fold-left">
         <div class="g-details_wrap">
             <div class="g-CD_wrap_bg"></div>
 
@@ -18,11 +19,17 @@
                 </header>
 
                 <div class="g-content">
-                    <div class="g-CD_wrap">
+                    <div class="g-CD_wrap" v-if="false">
                         <div class="g-CD_bg">
                             <div class="g-CD_img" :style="{transform:'rotate('+ deg +'deg)'}">
                                 <img :src="playData.pic" alt="">
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="g-lyric_wrap">
+                        <div class="g-lyric_content">
+
                         </div>
                     </div>
                 </div>
@@ -30,8 +37,8 @@
                 <div class="g-details_footer">
 
                     <div class="g-bar_wrap">
-                        <div><span class="g-dot_start">0:00</span></div>
-                        <Bar :timing="timing"></Bar>
+                        <div><span class="g-dot_start">{{startCurrentTime}}</span></div>
+                        <Bar></Bar>
                         <div><span class="g-dot_end">{{duration | totalTime}}</span></div>
                     </div>
 
@@ -51,12 +58,14 @@
             </div>
 
         </div>
+        </transition>
     </div>  
 </template>
 
 <script>
 import {mapState,mapMutations} from 'vuex'
 import Bar from '@/components/progressBar'
+import {axios_getLrc} from '@/service/service'
 
 export default {
   name: 'musicDetails',
@@ -65,8 +74,6 @@ export default {
       msg: 'Welcome to Your Vue.js App',
       deg:0,
       degTimer:null,
-      
-      
     }
   },
   filters:{
@@ -81,7 +88,15 @@ export default {
       }
   },
   computed:{
-      ...mapState(['playData','isPlaying','timing','duration'])
+      ...mapState(['playData','isPlaying','timing','duration']),
+      startCurrentTime:function(){
+            let time_s = parseInt(this.timing * 0.01 * this.duration),
+                m = Math.floor(time_s/60),
+                s = Math.floor(time_s%60);
+                m < 10 && (m = '0' + m);
+                s < 10 && (s = '0' + s);
+              return m + ':' + s;      
+      }
   },
   components:{Bar},
   methods:{
@@ -105,10 +120,23 @@ export default {
               this.degTimer = null;
           }
       },
+      async getLrc(){
+          if(this.playData.id == '')
+          {
+              return;
+          }
+          let response = await axios_getLrc(this.playData.id);
+          console.log("获取歌词")
+          console.log(this.playData)
+          console.log(response)
+      }
 
   },
   mounted:function(){
-
+      this.isPlaying ? this.degRotate() : this.pauseTimer();
+      console.log("音乐信息")
+      console.log(this.playData);
+      this.getLrc();
   },
   watch:{
       isPlaying:function(msg){
@@ -137,7 +165,7 @@ export default {
         z-index:99;
         color:#fff;
         background-color:#7f7f7f;
-        animation:Opacity .5s alternate;
+        animation:myopacity .3s forwards;
 
         &>.g-CD_wrap_bg{
             .g-position;
@@ -148,6 +176,7 @@ export default {
             transform: scale(1.5);
             transform-origin: center top;
             z-index: -1;
+
 
             &::after{
                 content:'';
@@ -190,11 +219,15 @@ export default {
         }
 
         & .g-content{
+            position:relative;
+            overflow:hidden;
+            display:flex;
 
             &>.g-CD_wrap{
                 padding-top:0.6rem;
                 width:100%;
                 min-height:3rem;
+                min-width:100%;
                 display:flex;
                 justify-content:center;
 
@@ -236,6 +269,13 @@ export default {
                     }
                 }
             }
+
+            &>.g-lyric_wrap{
+                border:1px solid red;
+                width:100%;
+                text-align:center;
+                padding:0.2rem 0.35rem;
+            }
         }
 
         & .g-details_footer{
@@ -275,6 +315,16 @@ export default {
                     font-size:0.4rem;
                 }
             }
+        }
+    }
+
+    @keyframes myopacity {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
         }
     }
 </style>
