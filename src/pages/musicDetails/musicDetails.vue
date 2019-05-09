@@ -29,7 +29,10 @@
 
                     <div class="g-lyric_wrap">
                         <div class="g-lyric_content">
-
+                            <ul class="g-lrc_list" ref="lrcList" :style="{top:'calc('+ lineno * liHeight * -1 + 'px + 50%)'}">
+                                <li v-for="(item,i) in lrcData" :key="i" :class="{active:i==lineno}" >{{item.text}}</li>
+                                <li v-if="!lrcData.length">暂无歌词信息</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -74,6 +77,7 @@ export default {
       msg: 'Welcome to Your Vue.js App',
       deg:0,
       degTimer:null,
+      liHeight:40,
     }
   },
   filters:{
@@ -88,7 +92,7 @@ export default {
       }
   },
   computed:{
-      ...mapState(['playData','isPlaying','timing','duration']),
+      ...mapState(['playData','isPlaying','timing','duration','currentTime','lrcData','lineno']),
       startCurrentTime:function(){
             let time_s = parseInt(this.timing * 0.01 * this.duration),
                 m = Math.floor(time_s/60),
@@ -100,7 +104,7 @@ export default {
   },
   components:{Bar},
   methods:{
-      ...mapMutations(['IS_PLAYING','TIMING']),
+      ...mapMutations(['IS_PLAYING','TIMING','LRC_DATA']),
       play(){
           this.timing == 100 && this.TIMING(0);
           this.IS_PLAYING(!this.isPlaying);
@@ -120,23 +124,13 @@ export default {
               this.degTimer = null;
           }
       },
-      async getLrc(){
-          if(this.playData.id == '')
-          {
-              return;
-          }
-          let response = await axios_getLrc(this.playData.id);
-          console.log("获取歌词")
-          console.log(this.playData)
-          console.log(response)
-      }
+
 
   },
   mounted:function(){
       this.isPlaying ? this.degRotate() : this.pauseTimer();
       console.log("音乐信息")
       console.log(this.playData);
-      this.getLrc();
   },
   watch:{
       isPlaying:function(msg){
@@ -275,6 +269,36 @@ export default {
                 width:100%;
                 text-align:center;
                 padding:0.2rem 0.35rem;
+
+                &>.g-lyric_content{
+                    position:relative;
+                    border:1px solid orange;
+                    height:4rem;
+                    overflow:hidden;
+
+                    &>.g-lrc_list{
+                        position:absolute;
+                        display:flex;
+                        flex-direction: column;
+                        width:100%;
+                        border:1px solid green;
+                        top:50%;
+                        align-items:center;
+                        justify-content: center;
+                        transition:top .3s;
+
+                        &>li{
+                            width:100%;
+                            height:0.4rem;
+                            color:rgba(255,255,255,0.5);
+                            font-size:0.14rem;
+
+                            &.active{
+                                color:#fff;
+                            }
+                        }
+                    }
+                }
             }
         }
 

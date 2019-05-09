@@ -29,6 +29,7 @@
                     @progress="onprogress"
                     @canplay="oncanplay"
                     @canplaythrough="oncanplaythrough"
+                    @timeupdate="ontimeupdate"
                 ></audio>
             </div>
             
@@ -41,6 +42,7 @@
 
 <script>
 import {mapState,mapMutations} from 'vuex'
+import {axios_getLrc} from '@/service/service'
 
 export default {
   name: 'myfooter',
@@ -52,10 +54,10 @@ export default {
     }
   },
   computed:{
-      ...mapState(['playData','isPlaying','timing','duration','setCurrentTime'])
+      ...mapState(['playData','isPlaying','timing','duration','setCurrentTime','currentTime','lrcData','lineno'])
   },
   methods:{
-      ...mapMutations(['IS_PLAYING','TIMING','DURATION']),
+      ...mapMutations(['IS_PLAYING','TIMING','DURATION','CURRENT_TIME','LRC_DATA','LINENO']),
       play(){
           // 播放/暂停
           let audio = this.$refs.myAudio;
@@ -67,6 +69,7 @@ export default {
           // 开始播放
           this.drageMove();
           this.degRotate();
+          this.lrcData.length && this.setLine();
       },
       onpause:function(){
           // 暂停播放
@@ -82,18 +85,36 @@ export default {
       onloadedmetadata:function(){
           let audio = this.$refs.myAudio;
           this.DURATION(Math.floor(audio.duration));
+          console.log("总是长：")
+          console.log(audio.duration)
           console.log("当指定的音频/视频的元数据已加载时，会发生 loadedmetadata 事件。");
       },
       onloadeddata:function(){console.log("当前帧的数据已加载，但没有足够的数据来播放指定音频/视频的下一帧时,发生 onloadeddata 事件");},
       onprogress:function(){console.log("当浏览器正在下载指定的音频/视频时，会发生 progress 事件。")},
       oncanplay:function(){console.log("当浏览器能够开始播放指定的音频/视频时，发生 canplay 事件。")},
       oncanplaythrough:function(){console.log("当浏览器预计能够在不停下来进行缓冲的情况下持续播放指定的音频/视频时，会发生 canplaythrough 事件。")},
+      ontimeupdate:function(){
+          // 歌曲正在播放时
+          // 设置当前行歌词
+          if(this.lrcData.length)
+          {
+              let s = Number(this.lrcData[this.lineno].time) || 0;
+
+              if(s <= this.currentTime && this.currentTime <= Number(this.lrcData[this.lineno+1].time || 0) )
+              {
+                  this.LINENO(this.lineno + 1);
+              }
+
+
+          }
+      },
       drageMove:function(){
           // 进度
           let audio = this.$refs.myAudio,
               _this = this;
           clearInterval(this.timer);
           this.timer = setInterval(function(){
+              _this.CURRENT_TIME(audio.currentTime.toFixed(2));
               _this.TIMING(Math.ceil(audio.currentTime)  / Math.floor(audio.duration) * 100);
           },1000);
       },
@@ -117,7 +138,54 @@ export default {
           this.degTimer = setInterval(function(){
                _this.deg += 1;
           },60)
+      },
+      async getLrc(){
+          // 获取歌词
+          if(this.playData.id == '')
+          {
+              return;
+          }
+          let response = await axios_getLrc(this.playData.id);
+          if(response.status == 200)
+          {
+              let data = response.data,
+                  reg = /\]/,
+                  arr = data.split(/\n/),
+                  lrcList = [];
+
+            console.log("获取歌词")
+            console.log(data)
+
+              for(let i=0;i<arr.length;i++)
+              {
+                  let item = arr[i].split(reg),
+                      t = item[0].slice(1),
+                    obj = {
+                        text: item[1],
+                        time: (t.split(":")[0] * 60 + parseFloat(t.split(":")[1])).toFixed(2)
+                    };
+
+                  lrcList[i] = obj;
+
+              }
+              this.LRC_DATA(lrcList);
+            console.log(lrcList)
+          }
+      },
+      setLine(){
+          // 每当开始播放时设置当前行
+          let audio = this.$refs.myAudio;
+          console.log('lrcLength:'+ this.lrcData.length)
+          
+          for(let i=0;i<this.lrcData.length;i++)
+          {
+              if(audio.currentTime < this.lrcData[i].time){
+                  this.LINENO(i);
+                  break;
+              }
+          }
       }
+
   },
   mounted:function(){
         
@@ -131,6 +199,7 @@ export default {
       },
       playData:function(msg){
           //this.TIMING(0);
+          this.getLrc();
       },
       setCurrentTime:function(msg){
           let audio = this.$refs.myAudio;

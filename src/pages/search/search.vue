@@ -78,7 +78,6 @@ export default {
           // 输入查询
           console.log(this.value)
           let response = await axios_getSearch(this.value);
-          console.log(response)
           if( response.status == 200)
           {
               this.searchHelpValue = response.data.data;

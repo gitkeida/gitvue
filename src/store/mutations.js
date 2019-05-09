@@ -30,6 +30,17 @@ export default {
     // 设置当前播放时间
     SET_CURRENT_TIME(state,msg){
         state.setCurrentTime = msg;
+    },
+    // 当前播放时间
+    CURRENT_TIME(state,msg){
+        state.currentTime = msg;
+    },
+    // 歌词
+    LRC_DATA(state,msg){
+        state.lrcData = msg;
+    },
+    LINENO(state,msg){
+        state.lineno = msg;
     }
 
 }
