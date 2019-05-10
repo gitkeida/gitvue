@@ -18,8 +18,8 @@
                     </div>
                 </header>
 
-                <div class="g-content">
-                    <div class="g-CD_wrap" v-if="false">
+                <div class="g-content" @click="showLrc = !showLrc">
+                    <div class="g-CD_wrap" v-show="!showLrc">
                         <div class="g-CD_bg">
                             <div class="g-CD_img" :style="{transform:'rotate('+ deg +'deg)'}">
                                 <img :src="playData.pic" alt="">
@@ -27,7 +27,7 @@
                         </div>
                     </div>
 
-                    <div class="g-lyric_wrap">
+                    <div class="g-lyric_wrap" v-show="showLrc">
                         <div class="g-lyric_content">
                             <ul class="g-lrc_list" ref="lrcList" :style="{top:'calc('+ lineno * liHeight * -1 + 'px + 50%)'}">
                                 <li v-for="(item,i) in lrcData" :key="i" :class="{active:i==lineno}" >{{item.text}}</li>
@@ -75,6 +75,7 @@ export default {
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
+      showLrc:false,
       deg:0,
       degTimer:null,
       liHeight:40,
@@ -216,6 +217,7 @@ export default {
             position:relative;
             overflow:hidden;
             display:flex;
+            height:100%;
 
             &>.g-CD_wrap{
                 padding-top:0.6rem;
@@ -224,6 +226,7 @@ export default {
                 min-width:100%;
                 display:flex;
                 justify-content:center;
+                animation:opacity .4s forwards;
 
                 &>.g-CD_bg{
                     display:flex;
@@ -265,14 +268,15 @@ export default {
             }
 
             &>.g-lyric_wrap{
-                border:1px solid red;
+                // border:1px solid red;
                 width:100%;
                 text-align:center;
                 padding:0.2rem 0.35rem;
+                animation:opacity .4s forwards;
 
                 &>.g-lyric_content{
                     position:relative;
-                    border:1px solid orange;
+                    // border:1px solid orange;
                     height:4rem;
                     overflow:hidden;
 
@@ -281,7 +285,7 @@ export default {
                         display:flex;
                         flex-direction: column;
                         width:100%;
-                        border:1px solid green;
+                        // border:1px solid green;
                         top:50%;
                         align-items:center;
                         justify-content: center;

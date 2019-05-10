@@ -12,11 +12,16 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: Home,
+      
     },
     {
       path:'/search',
-      component: Search
+      name: 'search',
+      component: Search,
+      meta:{
+        keepAlive: true
+      }
     },
     {
       path:'/musicDetails',

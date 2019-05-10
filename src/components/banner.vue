@@ -160,8 +160,10 @@ export default {
           }
       },
       paginationClick:function(idx){
+          this.stopBanner();
           this.active_lis = idx;
           this.setBannerLeft(this.wrapWid * this.active_lis * -1);
+          this.startBanner();
       },
       resize(){
           this.wrapWid =  this.$refs.bannerList.clientWidth || _this.$refs.bannerList.firstChild.clientWidth;
