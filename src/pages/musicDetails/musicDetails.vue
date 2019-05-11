@@ -40,7 +40,7 @@
                 <div class="g-details_footer">
 
                     <div class="g-bar_wrap">
-                        <div><span class="g-dot_start">{{startCurrentTime}}</span></div>
+                        <div><span class="g-dot_start">{{startCurrentTime || '00:00' }}</span></div>
                         <Bar></Bar>
                         <div><span class="g-dot_end">{{duration | totalTime}}</span></div>
                     </div>
@@ -93,7 +93,7 @@ export default {
       }
   },
   computed:{
-      ...mapState(['playData','isPlaying','timing','duration','currentTime','lrcData','lineno']),
+      ...mapState(['playData','isPlaying','timing','duration','lrcData','lineno']),
       startCurrentTime:function(){
             let time_s = parseInt(this.timing * 0.01 * this.duration),
                 m = Math.floor(time_s/60),

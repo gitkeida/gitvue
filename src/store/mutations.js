@@ -31,14 +31,11 @@ export default {
     SET_CURRENT_TIME(state,msg){
         state.setCurrentTime = msg;
     },
-    // 当前播放时间
-    CURRENT_TIME(state,msg){
-        state.currentTime = msg;
-    },
     // 歌词
     LRC_DATA(state,msg){
         state.lrcData = msg;
     },
+    // 歌词当前行
     LINENO(state,msg){
         state.lineno = msg;
     }

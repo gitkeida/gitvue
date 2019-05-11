@@ -18,7 +18,6 @@ const state = {
     isPlaying:false,        // 播放状态
     duration:0,             // 歌曲时长
     timing:0,               // 播放进度 0%  
-    currentTime:null,       // 当前播放时间
     setCurrentTime:null,    // 设置当前播放时间
     lrcData:[],             // 歌词
     lineno:0,               // 歌词当前行

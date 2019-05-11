@@ -19,8 +19,8 @@
             </div>
         </div>
 
-        <div class="g-search_list_wrap">
-            <ul class="g-search_list">
+        <div class="g-search_list_wrap" v-loading="loading">
+            <ul class="g-search_list"  >
                 <li v-for="(item,idx) in searchListValue" :key="idx" @click="goPlay(idx)">
                     <div>
                         <div class="g-text">
@@ -51,7 +51,8 @@ export default {
       value:"",
       searchHelpValue:null,
       showSearchHelp:false,
-      searchListValue:null,
+      searchListValue:[],
+      loading:false,
       
     }
   },
@@ -64,11 +65,13 @@ export default {
             console.log("搜索点击")
             console.log(val)
             this.showSearchHelp = false;
+            this.loading = true;
             let response = await axios_goSearch(val);
             console.log(response)
             if( response.status == 200)
             {
                 this.searchListValue = response.data.data;
+                this.loading = false;
             }
       },
       async searchIn(e){

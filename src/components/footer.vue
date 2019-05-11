@@ -22,13 +22,9 @@
                     @play="onplay"
                     @pause="onpause"
                     @ended="onended"
-                    @loadstart="onloadstart"
-                    @durationchange="ondurationchange"
+
                     @loadedmetadata="onloadedmetadata"
-                    @loadeddata="onloadeddata"
-                    @progress="onprogress"
-                    @canplay="oncanplay"
-                    @canplaythrough="oncanplaythrough"
+
                     @timeupdate="ontimeupdate"
                 ></audio>
             </div>
@@ -54,10 +50,10 @@ export default {
     }
   },
   computed:{
-      ...mapState(['playData','isPlaying','timing','duration','setCurrentTime','currentTime','lrcData','lineno'])
+      ...mapState(['playData','isPlaying','timing','duration','setCurrentTime','lrcData','lineno'])
   },
   methods:{
-      ...mapMutations(['IS_PLAYING','TIMING','DURATION','CURRENT_TIME','LRC_DATA','LINENO']),
+      ...mapMutations(['IS_PLAYING','TIMING','DURATION','LRC_DATA','LINENO']),
       play(){
           // 播放/暂停
           let audio = this.$refs.myAudio;
@@ -99,10 +95,15 @@ export default {
           if(this.lrcData.length)
           {
               let s = Number(this.lrcData[this.lineno].time) || 0;
+              let audio = this.$refs.myAudio;
 
-              if(s <= this.currentTime && this.currentTime <= Number(this.lrcData[this.lineno+1].time || 0) )
+
+              if(s <= audio.currentTime && audio.currentTime >= Number(this.lrcData[this.lineno+1].time || 0) )
               {
                   this.LINENO(this.lineno + 1);
+                  console.log('s:'+s);
+                  console.log('下一行lineno:'+Number(this.lrcData[this.lineno].time || 0))
+                  console.log("下一行了："+this.lineno);
               }
 
 
@@ -114,7 +115,6 @@ export default {
               _this = this;
           clearInterval(this.timer);
           this.timer = setInterval(function(){
-              _this.CURRENT_TIME(audio.currentTime.toFixed(2));
               _this.TIMING(Math.ceil(audio.currentTime)  / Math.floor(audio.duration) * 100);
           },1000);
       },
@@ -180,10 +180,17 @@ export default {
           for(let i=0;i<this.lrcData.length;i++)
           {
               if(audio.currentTime < this.lrcData[i].time){
-                  this.LINENO(i);
+                  let idx = i <=0 ? 0 : i-1;
+                  console.log("当前播放时间："+audio.currentTime);
+                  this.LINENO(idx);
+                  console.log("设置当前行："+idx);
                   break;
               }
           }
+      },
+      init(){
+          this.TIMING(0);
+          this.LINENO(0);
       }
 
   },
@@ -198,8 +205,9 @@ export default {
           msg ?  audio.play() : audio.pause();
       },
       playData:function(msg){
-          //this.TIMING(0);
+          this.init();
           this.getLrc();
+
       },
       setCurrentTime:function(msg){
           let audio = this.$refs.myAudio;
