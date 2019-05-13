@@ -1,5 +1,5 @@
 import {
-    AUDIO_DATA,
+    AUDIO_LIST,
     PLAY_DATA,
     IS_PLAYING,
     TIMING
@@ -8,12 +8,14 @@ import {
 export default {
     // 当前播放音乐
     [PLAY_DATA](state,data){
+        state.isPlayErr = false;
         state.isPlaying = true;
-        state.footerTiming = 0;
+        state.timing = 0;
+        state.lineno = 0;
         state.playData = data;
     },
-    [AUDIO_DATA](state,data){
-        state.audioData = data;
+    [AUDIO_LIST](state,data){
+        state.audioList = data;
     },
     // 播放状态
     [IS_PLAYING](state,boolean){
@@ -38,6 +40,14 @@ export default {
     // 歌词当前行
     LINENO(state,msg){
         state.lineno = msg;
+    },
+    // 播放错误
+    IS_PLAY_ERR(state,msg){
+        state.isPlayErr = msg;
+    },
+    // 当前播放歌曲序号
+    PLAY_INDEX(state,msg){
+        state.playIndex = msg;
     }
 
 }

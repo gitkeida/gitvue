@@ -22,9 +22,8 @@
                     @play="onplay"
                     @pause="onpause"
                     @ended="onended"
-
                     @loadedmetadata="onloadedmetadata"
-
+                    @error="onerror"
                     @timeupdate="ontimeupdate"
                 ></audio>
             </div>
@@ -50,10 +49,10 @@ export default {
     }
   },
   computed:{
-      ...mapState(['playData','isPlaying','timing','duration','setCurrentTime','lrcData','lineno'])
+      ...mapState(['playData','isPlaying','timing','duration','setCurrentTime','lrcData','lineno','isPlayErr'])
   },
   methods:{
-      ...mapMutations(['IS_PLAYING','TIMING','DURATION','LRC_DATA','LINENO']),
+      ...mapMutations(['IS_PLAYING','TIMING','DURATION','LRC_DATA','LINENO','IS_PLAY_ERR']),
       play(){
           // 播放/暂停
           let audio = this.$refs.myAudio;
@@ -76,19 +75,22 @@ export default {
           console.log("播放结束");
           this.IS_PLAYING(false);
       },
-      onloadstart:function(){console.log("当浏览器开始寻找指定的音频/视频时，会发生 loadstart 事件。即当加载过程开始时。")},
-      ondurationchange:function(){console.log("当指定音频/视频的时长数据发生变化时，发生 durationchange 事件。")},
+      onerror:function(){
+          //console.log("错误发生： error")
+          this.IS_PLAY_ERR(true);
+          this.$notify({
+                title: '温馨提示',
+                message: '该歌曲目前无法播放，请切换下一首',
+                type: 'warning'
+          });
+      },
       onloadedmetadata:function(){
+          //当指定的音频/视频的元数据已加载时，会发生 loadedmetadata 事件。
           let audio = this.$refs.myAudio;
           this.DURATION(Math.floor(audio.duration));
           console.log("总是长：")
           console.log(audio.duration)
-          console.log("当指定的音频/视频的元数据已加载时，会发生 loadedmetadata 事件。");
       },
-      onloadeddata:function(){console.log("当前帧的数据已加载，但没有足够的数据来播放指定音频/视频的下一帧时,发生 onloadeddata 事件");},
-      onprogress:function(){console.log("当浏览器正在下载指定的音频/视频时，会发生 progress 事件。")},
-      oncanplay:function(){console.log("当浏览器能够开始播放指定的音频/视频时，发生 canplay 事件。")},
-      oncanplaythrough:function(){console.log("当浏览器预计能够在不停下来进行缓冲的情况下持续播放指定的音频/视频时，会发生 canplaythrough 事件。")},
       ontimeupdate:function(){
           // 歌曲正在播放时
           // 设置当前行歌词
@@ -96,7 +98,6 @@ export default {
           {
               let s = Number(this.lrcData[this.lineno].time) || 0;
               let audio = this.$refs.myAudio;
-
 
               if(s <= audio.currentTime && audio.currentTime >= Number(this.lrcData[this.lineno+1].time || 0) )
               {
@@ -110,7 +111,7 @@ export default {
           }
       },
       drageMove:function(){
-          // 进度
+          // 播放进度
           let audio = this.$refs.myAudio,
               _this = this;
           clearInterval(this.timer);
@@ -173,7 +174,7 @@ export default {
           }
       },
       setLine(){
-          // 每当开始播放时设置当前行
+          // 每当开始播放时设置歌词当前行
           let audio = this.$refs.myAudio;
           console.log('lrcLength:'+ this.lrcData.length)
           
@@ -188,30 +189,30 @@ export default {
               }
           }
       },
-      init(){
-          this.TIMING(0);
-          this.LINENO(0);
-      }
 
-  },
-  mounted:function(){
-        
+
   },
   watch:{
       isPlaying:function(msg){
           console.log("播放状态改变")
           console.log(msg);
+          if(this.isPlayErr){
+              return this.onerror();
+          }
           let audio = this.$refs.myAudio;
           msg ?  audio.play() : audio.pause();
       },
       playData:function(msg){
-          this.init();
           this.getLrc();
-
       },
       setCurrentTime:function(msg){
+          // 设置播放时间
+          if(this.isPlayErr){
+              return this.onerror();
+          }
           let audio = this.$refs.myAudio;
           audio.currentTime = msg;
+          this.IS_PLAYING(true);
       }
   }
 }

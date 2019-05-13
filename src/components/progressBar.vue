@@ -60,7 +60,6 @@ export default {
           this.isDot = false;
           let time_s = this.timing * 0.01 * this.duration;
           this.SET_CURRENT_TIME(Math.floor(time_s));
-          this.IS_PLAYING(true);
       },
   },
   mounted:function(){

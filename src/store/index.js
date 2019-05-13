@@ -5,7 +5,7 @@ Vue.use(Vuex);
 
 
 const state = {
-    audioData:{},       
+    audioList:[],       // 播放列表
     playData:{
         id: '',
         lrc: '',
@@ -21,6 +21,9 @@ const state = {
     setCurrentTime:null,    // 设置当前播放时间
     lrcData:[],             // 歌词
     lineno:0,               // 歌词当前行
+    isPlayErr:false,        // 播放错误
+    playIndex: 0,           // 当前播放歌曲序号
+    playType: 'list',       // list：列表循环， one:单曲循环,  ram:随机播放
 }
 
 

@@ -40,20 +40,20 @@
                 <div class="g-details_footer">
 
                     <div class="g-bar_wrap">
-                        <div><span class="g-dot_start">{{startCurrentTime || '00:00' }}</span></div>
+                        <div><span class="g-dot_start">{{startCurrentTime | totalTime }}</span></div>
                         <Bar></Bar>
                         <div><span class="g-dot_end">{{duration | totalTime}}</span></div>
                     </div>
 
                     <div class="g-menu_wrap">
                         <div>
-                            <i class="el-icon-d-arrow-left"></i>
+                            <i class="el-icon-d-arrow-left" @click="trigger('prev')"></i>
                         </div>
                         <div>
                             <i :class="isPlaying ? 'el-icon-video-pause' : 'el-icon-video-play' " @click="play"></i>
                         </div>
                         <div>
-                            <i class="el-icon-d-arrow-right"></i>
+                            <i class="el-icon-d-arrow-right" @click="trigger('next')"></i>
                         </div>
                     </div>
 
@@ -84,28 +84,34 @@ export default {
   filters:{
       totalTime:function(msg){
           msg = parseInt(msg);
+          if(!msg)
+          {
+              return '00:00';
+          }
           var m,s;
           m = Math.floor(msg/60);
           s = Math.floor(msg%60);
           m < 10 && (m = '0' + m);
           s < 10 && (s = '0' + s);
           return m + ':' + s;
-      }
+      },
+      
   },
   computed:{
-      ...mapState(['playData','isPlaying','timing','duration','lrcData','lineno']),
+      ...mapState(['playData','isPlaying','timing','duration','lrcData','lineno','audioList','isPlayErr']),
       startCurrentTime:function(){
-            let time_s = parseInt(this.timing * 0.01 * this.duration),
-                m = Math.floor(time_s/60),
-                s = Math.floor(time_s%60);
-                m < 10 && (m = '0' + m);
-                s < 10 && (s = '0' + s);
-              return m + ':' + s;      
+            //let time_s = parseInt(this.timing * 0.01 * this.duration),
+            //     m = Math.floor(time_s/60),
+            //     s = Math.floor(time_s%60);
+            //     m < 10 && (m = '0' + m);
+            //     s < 10 && (s = '0' + s);
+            //   return m + ':' + s;      
+            return this.timing * 0.01 * this.duration;
       }
   },
   components:{Bar},
   methods:{
-      ...mapMutations(['IS_PLAYING','TIMING','LRC_DATA']),
+      ...mapMutations(['IS_PLAYING','TIMING','LRC_DATA','PLAY_DATA']),
       play(){
           this.timing == 100 && this.TIMING(0);
           this.IS_PLAYING(!this.isPlaying);
@@ -125,17 +131,36 @@ export default {
               this.degTimer = null;
           }
       },
+      trigger(type){
+          // 切换歌曲
+          let idx = 0,
+              length = this.audioList.length;
+          for(let i=0;i<length;i++)
+          {
+              if(this.playData == this.audioList[i])
+              {
+                  idx = type == 'next' ? i+1 : i-1;
+                  idx < 0 && (idx = length - 1);
+                  idx >= length && (idx == 0);
+                  this.PLAY_DATA(this.audioList[idx]);
+                  break;
+              }
+          }
+      }
 
 
   },
   mounted:function(){
-      this.isPlaying ? this.degRotate() : this.pauseTimer();
+      !this.isPlayErr && this.isPlaying ? this.degRotate() : this.pauseTimer();
       console.log("音乐信息")
       console.log(this.playData);
   },
   watch:{
       isPlaying:function(msg){
-          msg ? this.degRotate() : this.pauseTimer();
+           (!this.isPlayErr && msg) ? this.degRotate() : this.pauseTimer();
+      },
+      isPlayErr:function(msg){
+          msg ? this.pauseTimer() : this.degRotate();
       }
   }
 

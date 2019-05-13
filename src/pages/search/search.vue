@@ -57,10 +57,10 @@ export default {
     }
   },
   computed:{
-      ...mapState(['playData'])
+      ...mapState(['playData','audioList'])
   },
   methods:{
-      ...mapMutations(['PLAY_DATA']),
+      ...mapMutations(['PLAY_DATA','AUDIO_LIST']),
       async goSearch(val){
             console.log("搜索点击")
             console.log(val)
@@ -98,7 +98,8 @@ export default {
       },
       goPlay(idx){
           console.log("发送数据");
-          this.playData != this.searchListValue[idx] && this.PLAY_DATA(this.searchListValue[idx])
+          this.audioList != this.searchListValue && this.AUDIO_LIST(this.searchListValue);
+          this.playData != this.audioList[idx] && this.PLAY_DATA(this.audioList[idx]);
           this.$router.push("/musicDetails");
 
       }
