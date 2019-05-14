@@ -47,13 +47,19 @@
 
                     <div class="g-menu_wrap">
                         <div>
+                            <i :class="typeIcon" @click="typeTrigger"></i>                            
+                        </div>
+                        <div>
                             <i class="el-icon-d-arrow-left" @click="trigger('prev')"></i>
                         </div>
                         <div>
-                            <i :class="isPlaying ? 'el-icon-video-pause' : 'el-icon-video-play' " @click="play"></i>
+                            <i style="font-size:0.4rem" :class="isPlaying ? 'el-icon-video-pause' : 'el-icon-video-play' " @click="play"></i>
                         </div>
                         <div>
                             <i class="el-icon-d-arrow-right" @click="trigger('next')"></i>
+                        </div>
+                        <div>
+                            <i class="el-icon-s-operation" ></i>
                         </div>
                     </div>
 
@@ -75,10 +81,15 @@ export default {
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
-      showLrc:false,
-      deg:0,
-      degTimer:null,
-      liHeight:40,
+      showLrc: false,
+      deg: 0,
+      degTimer: null,
+      liHeight: 40,
+      typeIconList: {
+          list: {icon:'el-icon-refresh',next:'one'},
+          one: {icon:'el-icon-refresh-left',next:'ram'},
+          ram: {icon:'el-icon-service',next:'list'}
+      }
     }
   },
   filters:{
@@ -98,7 +109,7 @@ export default {
       
   },
   computed:{
-      ...mapState(['playData','isPlaying','timing','duration','lrcData','lineno','audioList','isPlayErr']),
+      ...mapState(['playData','isPlaying','timing','duration','lrcData','lineno','audioList','isPlayErr','playIndex','playType']),
       startCurrentTime:function(){
             //let time_s = parseInt(this.timing * 0.01 * this.duration),
             //     m = Math.floor(time_s/60),
@@ -107,11 +118,14 @@ export default {
             //     s < 10 && (s = '0' + s);
             //   return m + ':' + s;      
             return this.timing * 0.01 * this.duration;
+      },
+      typeIcon:function(){
+          return this.typeIconList[this.playType].icon;
       }
   },
   components:{Bar},
   methods:{
-      ...mapMutations(['IS_PLAYING','TIMING','LRC_DATA','PLAY_DATA']),
+      ...mapMutations(['IS_PLAYING','TIMING','LRC_DATA','PLAY_DATA','PLAY_INDEX','PLAY_TYPE']),
       play(){
           this.timing == 100 && this.TIMING(0);
           this.IS_PLAYING(!this.isPlaying);
@@ -133,19 +147,26 @@ export default {
       },
       trigger(type){
           // 切换歌曲
-          let idx = 0,
-              length = this.audioList.length;
-          for(let i=0;i<length;i++)
-          {
-              if(this.playData == this.audioList[i])
-              {
-                  idx = type == 'next' ? i+1 : i-1;
-                  idx < 0 && (idx = length - 1);
-                  idx >= length && (idx == 0);
-                  this.PLAY_DATA(this.audioList[idx]);
-                  break;
-              }
-          }
+        //   let idx = 0,
+        //       length = this.audioList.length;
+        //   for(let i=0;i<length;i++)
+        //   {
+        //       if(this.playData == this.audioList[i])
+        //       {
+        //           idx = type == 'next' ? i+1 : i-1;
+        //           idx < 0 && (idx = length - 1);
+        //           idx >= length && (idx = 0);
+        //           this.PLAY_DATA(this.audioList[idx]);
+        //           break;
+        //       }
+        //   }
+        let idx = type == 'next' ? this.playIndex + 1 : this.playIndex - 1;
+        this.PLAY_INDEX({controls:true,msg:idx});
+
+      },
+      typeTrigger(){
+          // 切换播放类型
+            this.PLAY_TYPE(this.typeIconList[this.playType].next);
       }
 
 
@@ -358,15 +379,12 @@ export default {
                 display:flex;
                 justify-content:space-around;
                 align-items:center;
-                padding:0.2rem 15%;
+                padding:0.2rem 5%;
 
                 & i{
                     font-size:0.25rem;
                 }
 
-                & >div:nth-of-type(2)>i{
-                    font-size:0.4rem;
-                }
             }
         }
     }

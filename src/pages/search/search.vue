@@ -60,7 +60,7 @@ export default {
       ...mapState(['playData','audioList'])
   },
   methods:{
-      ...mapMutations(['PLAY_DATA','AUDIO_LIST']),
+      ...mapMutations(['PLAY_DATA','AUDIO_LIST','PLAY_INDEX']),
       async goSearch(val){
             console.log("搜索点击")
             console.log(val)
@@ -100,6 +100,7 @@ export default {
           console.log("发送数据");
           this.audioList != this.searchListValue && this.AUDIO_LIST(this.searchListValue);
           this.playData != this.audioList[idx] && this.PLAY_DATA(this.audioList[idx]);
+          this.PLAY_INDEX({msg:idx});
           this.$router.push("/musicDetails");
 
       }

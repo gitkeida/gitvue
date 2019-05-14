@@ -5,7 +5,17 @@ Vue.use(Vuex);
 
 
 const state = {
-    audioList:[],       // 播放列表
+    audioList:[
+        {
+            id: '',
+            lrc: '',
+            time: '251',
+            pic: './static/img/39582418617683.jpg',
+            name: '沉默是金',
+            singer: '张国荣',
+            url: './static/mp3/chenmoshijing.mp3'
+        }
+    ],       // 播放列表
     playData:{
         id: '',
         lrc: '',
@@ -24,6 +34,7 @@ const state = {
     isPlayErr:false,        // 播放错误
     playIndex: 0,           // 当前播放歌曲序号
     playType: 'list',       // list：列表循环， one:单曲循环,  ram:随机播放
+
 }
 
 

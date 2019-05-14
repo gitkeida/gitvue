@@ -46,8 +46,35 @@ export default {
         state.isPlayErr = msg;
     },
     // 当前播放歌曲序号
-    PLAY_INDEX(state,msg){
-        state.playIndex = msg;
+    PLAY_INDEX(state,data){
+
+        if(data.controls)
+        {
+            switch(state.playType)
+            {
+
+                case 'ram':
+                    break;
+                
+                default:
+                    let length = state.audioList.length,
+                        idx = data.msg;
+                    idx < 0 && (idx = length - 1);
+                    idx >= length && (idx = 0);
+                    
+                    state.playIndex = idx;
+            }
+        }
+        else{
+            state.playIndex = data.msg;
+
+        }
+        console.log("设置当前歌曲序号："+state.playIndex);
+
+    },
+    // 切换播放类型
+    PLAY_TYPE(state,msg){
+        state.playType = msg;
     }
 
 }
