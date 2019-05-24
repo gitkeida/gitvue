@@ -7,7 +7,6 @@
 
             function setFontSize () {
                 var width = element.clientWidth;
-                console.log(width)
                 width > 640 && (width = 640);
                 element.style.fontSize = width * 2 / d  + "px";
             };

@@ -2,7 +2,9 @@
     <div>
         <Banner :items="bannerList.length" :loop="true" :autoPlay="3000" :pagination="true">
              <li v-for="(item,i) in bannerList" :key="i">
-                 <img :src="'./static/img/'+item.imgUrl" alt="">
+                 <a href="">
+                     <img :src="'./static/img/'+item.imgUrl"  alt="">
+                 </a>
              </li>
         </Banner>
         <div class="container">

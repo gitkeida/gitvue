@@ -1,9 +1,13 @@
 <template>
   <div class="">
      <div class="g-banner_wrap"
-        @touchstart.stop="items > 1 && start($event)"
-        @touchmove.stop="items > 1 && move($event)"
-        @touchend.stop="items >1 && end($event)"
+        @touchstart.stop="!PC && items > 1 &&  start($event)"
+        @touchmove.stop="!PC && items > 1 && move($event)"
+        @touchend.stop="!PC && items > 1 && end($event)"
+
+        @dragstart="PC && items > 1 && dragstart($event)"
+        @dragover="PC && items > 1 && dragover($event)"
+        @dragend="PC && items > 1 && end($event)"
      >
          <ul class="g-banner_list" 
             :style="{left:leftMsg + 'px',transition:duration}"
@@ -33,7 +37,8 @@ export default {
       duration:"all .5s",   // duration value
       active_lis:0,         // active item
       timer:null,           // timer
-
+      
+      PC:false,
     }
   },
   props: {
@@ -167,7 +172,37 @@ export default {
       },
       resize(){
           this.wrapWid =  this.$refs.bannerList.clientWidth || _this.$refs.bannerList.firstChild.clientWidth;
-      }
+          this.PC = this.ISPC();
+      },
+      ISPC(){
+          var userAgentInfo = navigator.userAgent;
+            var Agents = ["Android", "iPhone",
+                "SymbianOS", "Windows Phone",
+                "iPad", "iPod"];
+            var flag = true;
+            for (var v = 0; v < Agents.length; v++) {
+                if (userAgentInfo.indexOf(Agents[v]) > 0) {
+                    flag = false;
+                    break;
+                }
+                
+            }
+            return flag;
+      },
+      dragstart:function(e){
+          this.autoPlay && this.stopBanner();
+          this.o_space = 0;
+          this.o_start = e.pageX;
+          this.o_startLeft = this.leftMsg;
+      },
+      dragover:function(e){
+          e.preventDefault();
+          let o_move = e.pageX;
+          this.o_space = o_move - this.o_start;
+          this.duration = '';
+          this.setBannerLeft(this.o_startLeft + this.o_space);
+      },
+      
   },
   mounted:function(){
 

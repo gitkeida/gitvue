@@ -54,6 +54,8 @@ export default {
             {
 
                 case 'ram':
+                    let ram = Math.floor(Math.random() * (state.audioList.length))
+                    console.log("随机数"+ram)
                     break;
                 
                 default:
@@ -70,6 +72,7 @@ export default {
 
         }
         console.log("设置当前歌曲序号："+state.playIndex);
+        state.playData = state.audioList[state.playIndex];
 
     },
     // 切换播放类型

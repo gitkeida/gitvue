@@ -18,7 +18,7 @@
             </div>
 
             <div class="g-audio_wrap">
-                <audio :src="playData && playData.url" :autoplay="isPlaying && 'autoplay'" controls ref="myAudio" 
+                <audio :src="playData && playData.url" :autoplay="isPlaying && 'autoplay'" :loop="playType == 'one' && 'loop'" controls ref="myAudio" 
                     @play="onplay"
                     @pause="onpause"
                     @ended="onended"
@@ -49,10 +49,10 @@ export default {
     }
   },
   computed:{
-      ...mapState(['playData','isPlaying','timing','duration','setCurrentTime','lrcData','lineno','isPlayErr'])
+      ...mapState(['playData','isPlaying','timing','duration','setCurrentTime','lrcData','lineno','isPlayErr','playType','playIndex'])
   },
   methods:{
-      ...mapMutations(['IS_PLAYING','TIMING','DURATION','LRC_DATA','LINENO','IS_PLAY_ERR']),
+      ...mapMutations(['IS_PLAYING','TIMING','DURATION','LRC_DATA','LINENO','IS_PLAY_ERR','PLAY_INDEX']),
       play(){
           // 播放/暂停
           let audio = this.$refs.myAudio;
@@ -74,6 +74,10 @@ export default {
       onended:function(){
           console.log("播放结束");
           this.IS_PLAYING(false);
+          let idx = this.playType == 'list' ? this.playIndex + 1 : this.playIndex;
+          this.PLAY_INDEX({controls:true,msg:idx});
+
+
       },
       onerror:function(){
           //console.log("错误发生： error")
