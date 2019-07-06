@@ -19,9 +19,9 @@
             </div>
         </div>
 
-        <div class="g-search_list_wrap" v-loading="loading">
-            <ul class="g-search_list"  >
-                <li v-for="(item,idx) in searchListValue" :key="idx" @click="goPlay(idx)">
+        <div class="g-search_list_wrap" v-loading="loading" ref='touch_list' >
+            <ul class="g-search_list" @touchstart='listStart' >
+                <li v-for="(item,idx) in newList" :key="idx" @click="goPlay(idx)">
                     <div>
                         <div class="g-text">
                             <p>{{item.name}}</p>
@@ -34,6 +34,9 @@
                     
                 </li>
             </ul>
+        </div>
+        <div class='g-loading_load' v-show='showLoad'>
+            <p>加载中<i class='el-icon-loading'></i></p>
         </div>
     </div>  
 </template>
@@ -53,7 +56,9 @@ export default {
       showSearchHelp:false,
       searchListValue:[],
       loading:false,
-      
+      newList: [],
+      count: 15,
+      showLoad: false,
     }
   },
   computed:{
@@ -72,6 +77,7 @@ export default {
             {
                 this.searchListValue = response.data.data;
                 this.loading = false;
+                this.loadList();
             }
       },
       async searchIn(e){
@@ -103,6 +109,46 @@ export default {
           this.PLAY_INDEX({msg:idx});
           this.$router.push("/musicDetails");
 
+      },
+      loadList(){
+          this.newList = this.searchListValue.slice(0,this.count);
+      },
+      listStart(e){
+          var scrollTop = document.body.scrollTop || document.documentElement.scrollTop,    // 益处高度
+              height = this.$refs.touch_list.scrollHeight,                                  // 容器高度
+              winHeight = window.screen.height;                                             // 屏幕可见高度
+
+            console.log(document.body.clientHeight);
+            console.log('屏幕高度：'+winHeight)
+            console.log('容器高度：'+height)
+            console.log('益出高度：'+scrollTop)
+
+      }
+  },
+  mounted:function(){
+      let This = this;
+      window.onscroll = function(){
+          let top = document.body.scrollTop || document.documentElement.scrollTop,
+              docHeight = document.body.clientHeight,
+              winHeight = window.screen.height;
+
+              if(top + winHeight >= docHeight)
+              {
+                  if (This.newList.length >= This.searchListValue.length) return;
+                  // 到达底部
+                  This.showLoad = true;
+                  setTimeout(()=>{
+                      This.count += 15;
+                      This.loadList();
+                      This.showLoad = false;
+
+                  },1500)
+              }
+              else{
+              }
+              
+        
+          console.log(top);
       }
   }
 }
@@ -256,5 +302,10 @@ export default {
                 }
             }
         }
+    }
+    .g-loading_load{
+        text-align:center;
+        padding:10px 0;
+        transition:all .2s;
     }
 </style>

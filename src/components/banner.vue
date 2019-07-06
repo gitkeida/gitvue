@@ -5,9 +5,9 @@
         @touchmove.stop="!PC && items > 1 && move($event)"
         @touchend.stop="!PC && items > 1 && end($event)"
 
-        @dragstart="PC && items > 1 && dragstart($event)"
-        @dragover="PC && items > 1 && dragover($event)"
-        @dragend="PC && items > 1 && end($event)"
+        @dragstart.stop="PC && items > 1 && dragstart($event)"
+        @dragover.stop="PC && items > 1 && dragover($event)"
+        @dragend="PC && items > 1 && dragend($event)"
      >
          <ul class="g-banner_list" 
             :style="{left:leftMsg + 'px',transition:duration}"
@@ -196,12 +196,14 @@ export default {
           this.o_startLeft = this.leftMsg;
       },
       dragover:function(e){
-          e.preventDefault();
           let o_move = e.pageX;
           this.o_space = o_move - this.o_start;
           this.duration = '';
           this.setBannerLeft(this.o_startLeft + this.o_space);
       },
+      dragend:function(e){
+          this.end();
+      }
       
   },
   mounted:function(){

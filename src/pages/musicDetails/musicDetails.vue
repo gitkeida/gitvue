@@ -167,7 +167,8 @@ export default {
       typeTrigger(){
           // 切换播放类型
             this.PLAY_TYPE(this.typeIconList[this.playType].next);
-      }
+      },
+
 
 
   },

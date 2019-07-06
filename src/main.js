@@ -9,6 +9,7 @@ import VueAxios from 'vue-axios'
 import '@/assets/css/base.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/assets/js/fontSize.js'
+import '@/assets/js/popo.js'
 import baseUrl from './service/api.config'
 import store from './store/index'
 

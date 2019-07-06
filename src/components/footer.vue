@@ -150,7 +150,7 @@ export default {
           {
               return;
           }
-          let response = await axios_getLrc(this.playData.id);
+          let response = await axios_getLrc(this.playData.lrc);
           if(response.status == 200)
           {
               let data = response.data,

@@ -20,10 +20,15 @@
             </div>
         </div>
         
+        <div class="g-imgbox" style='display:none;'>
+
+        </div>
+
         <router-link to="/hello">go to hello w</router-link>
     </div>
 </template>
-
+<script></script>
+    
 <script>
 import Banner from '@/components/banner'
 export default {
@@ -34,7 +39,7 @@ export default {
       imgUrl:require("../../assets/img/39582418617683.jpg"),
       BannerimgUrl:require("../../assets/img/1.gif"),
       bannerList:[
-          {imgUrl:'1.gif'},
+          {imgUrl:'banner_01.jpg'},
           {imgUrl:'banner_02.jpg'},
           {imgUrl:'banner_03.jpg'},
       ],
@@ -85,5 +90,19 @@ export default {
 
 
         }
+    }
+
+    .g-imgbox{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 200px;
+        height: 200px;
+        margin-top: -100px;
+        margin-left: -100px;
+        box-sizing: border-box;
+        border: 1px solid rgb(102, 102, 102);
+        box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.5);
+        background: none repeat scroll 0% 0% transparent;
     }
 </style>
