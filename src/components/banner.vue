@@ -6,8 +6,8 @@
         @touchend.stop="!PC && items > 1 && end($event)"
 
         @dragstart.stop="PC && items > 1 && dragstart($event)"
-        @dragover.stop="PC && items > 1 && dragover($event)"
-        @dragend="PC && items > 1 && dragend($event)"
+        @mousemove.stop="PC && items > 1 && dragover($event)"
+        @mouseup="PC && items > 1 && dragend($event)"
      >
          <ul class="g-banner_list" 
             :style="{left:leftMsg + 'px',transition:duration}"
@@ -39,6 +39,7 @@ export default {
       timer:null,           // timer
       
       PC:false,
+      mousedown: false,     // pc mouse down
     }
   },
   props: {
@@ -68,7 +69,7 @@ export default {
           let nowLeft = null;
           this.autoPlay && this.startBanner();
           
-          if(Math.abs(this.o_space) > this.wrapWid / 3)
+          if(Math.abs(this.o_space) > this.wrapWid / 5)
           {
 
               isF ? this.active_lis+=1 : this.active_lis-=1;
@@ -190,18 +191,27 @@ export default {
             return flag;
       },
       dragstart:function(e){
+          e.preventDefault();
+          this.mousedown = true;
           this.autoPlay && this.stopBanner();
           this.o_space = 0;
           this.o_start = e.pageX;
           this.o_startLeft = this.leftMsg;
       },
       dragover:function(e){
+          if(!this.mousedown) return;
+        //   e.preventDefault();
+        console.log("??")
           let o_move = e.pageX;
           this.o_space = o_move - this.o_start;
           this.duration = '';
           this.setBannerLeft(this.o_startLeft + this.o_space);
+          this.$refs.bannerList.querySelectorAll('a')[this.active_lis].style.pointerEvents = "none";
+
       },
       dragend:function(e){
+          this.mousedown = false;
+          this.$refs.bannerList.querySelectorAll('a')[this.active_lis].style.pointerEvents = "unset";
           this.end();
       }
       
@@ -238,10 +248,13 @@ export default {
             & >li{
                 min-width:100%;
                 height:100%;
+                cursor:pointer;
+
 
                 & img{
                     width:100%;
                     height:100%;
+                    cursor:pointer;
                 }
             }
         }
